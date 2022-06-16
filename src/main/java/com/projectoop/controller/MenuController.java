@@ -4,8 +4,10 @@ import com.projectoop.model.Edge;
 import com.projectoop.model.Graph;
 import com.projectoop.model.Vertex;
 import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -47,6 +49,10 @@ public class MenuController implements Initializable {
         graph.setShowWeight(!Graph.isShowWeight());
     }
 
+    public void exit() {
+        System.exit(0);
+    }
+
     static class InitMenu {
         TranslateTransition translateTransition;
         FadeTransition fadeTransition;
@@ -81,7 +87,9 @@ public class MenuController implements Initializable {
                 translateTransition.play();
                 fadeTransition.play();
                 rotateTransition.play();
-                container.setVisible(false);
+                PauseTransition p = new PauseTransition(Duration.millis(100));
+                p.setOnFinished(actionEvent -> container.setVisible(false));
+                p.play();
                 isShow = false;
             }
         }
@@ -104,11 +112,11 @@ public class MenuController implements Initializable {
     }
 
     public void showStatus() {
-        initStatus.play(100);
+        initStatus.play(-50);
     }
 
     public void showCodeTrace() {
-        initCodeTrace.play(100);
+        initCodeTrace.play(-50);
     }
 
     public void addOrLink(MouseEvent mouseEvent) {
@@ -116,8 +124,12 @@ public class MenuController implements Initializable {
         System.out.println(cur);
         if (cur == main && !isDrag) {
             Vertex node = new Vertex();
-            node.setLayoutX(robot.getMouseX() - main.localToScreen(main.getBoundsInLocal()).getMinX() - 22);
-            node.setLayoutY(robot.getMouseY() - main.localToScreen(main.getBoundsInLocal()).getMinY() - 22);
+            double x = robot.getMouseX() - main.localToScreen(main.getBoundsInLocal()).getMinX() - 22;
+            double y = robot.getMouseY() - main.localToScreen(main.getBoundsInLocal()).getMinY() - 22;
+            x = Math.min(x, main.getPrefWidth() - 44);
+            y = Math.min(y, main.getPrefHeight() - 44);
+            node.setLayoutX(x);
+            node.setLayoutY(y);
             node.setIdVertex(graph.getVertexes().size());
             main.getChildren().add(node);
             graph.addVertex(node);
@@ -174,8 +186,12 @@ public class MenuController implements Initializable {
 
     public void drawLine() {
         if (isDrag) {
-            currentLine.setEndX(robot.getMouseX() - main.getLayoutX() - main.getParent().getScene().getWindow().getX());
-            currentLine.setEndY(robot.getMouseY() - main.getLayoutY() - main.getParent().getScene().getWindow().getY());
+            double x = robot.getMouseX() - main.getLayoutX() - main.getParent().getScene().getWindow().getX();
+            double y = robot.getMouseY() - main.getLayoutY() - main.getParent().getScene().getWindow().getY();
+            x = Math.min(x, main.getPrefWidth() - 1);
+            y = Math.min(y, main.getPrefHeight() - 1);
+            currentLine.setEndX(x);
+            currentLine.setEndY(y);
         }
     }
 }

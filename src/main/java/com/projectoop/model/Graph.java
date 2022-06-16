@@ -1,7 +1,5 @@
 package com.projectoop.model;
 
-import javafx.scene.effect.BlurType;
-import javafx.scene.effect.Shadow;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -12,7 +10,7 @@ public class Graph {
     private final ArrayList<Vertex> vertexes = new ArrayList<>();
     private final ArrayList<Edge> edges = new ArrayList<>();
 
-    private static boolean showWeight = true;
+    private static boolean showWeight = false;
 
     public static boolean isShowWeight() {
         return showWeight;
@@ -63,10 +61,14 @@ public class Graph {
         if (isLight) {
             edge.setFill(Color.RED);
             edge.setStrokeWidth(3);
-        }
-        else {
+        } else {
             edge.setFill(Color.BLUEVIOLET);
             edge.setStrokeWidth(1);
         }
+    }
+
+    public static Graph example() {
+        Graph graph = new Graph();
+        return graph;
     }
 }

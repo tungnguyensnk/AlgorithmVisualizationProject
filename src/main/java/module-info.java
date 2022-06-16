@@ -7,4 +7,6 @@ module java.com.projectoop {
     exports com.projectoop;
     exports com.projectoop.controller;
     opens com.projectoop.controller to javafx.fxml;
+    exports com.projectoop.algorithm;
+    opens com.projectoop.algorithm to javafx.fxml;
 }
