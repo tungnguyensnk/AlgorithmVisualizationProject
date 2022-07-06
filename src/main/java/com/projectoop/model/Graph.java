@@ -1,6 +1,5 @@
 package com.projectoop.model;
 
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
@@ -28,24 +27,30 @@ public class Graph {
     }
 
     public void addVertex(Vertex vertex) {
+        getVertexes().forEach(vertex1 -> addEdge(new Edge(vertex, vertex1)));
         vertexes.add(vertex);
+    }
+
+    public int getLength(int start, int end) {
+        for (Edge edge : edges) {
+            if ((edge.getFrom().getIdVertex() == start && edge.getTo().getIdVertex() == end) ||
+                    (edge.getTo().getIdVertex() == start && edge.getFrom().getIdVertex() == end))
+                return edge.length;
+        }
+        return -1;
+    }
+
+    public Edge getEdgeById(int start, int end) {
+        for (Edge edge : edges) {
+            if ((edge.getFrom().getIdVertex() == start && edge.getTo().getIdVertex() == end) ||
+                    (edge.getTo().getIdVertex() == start && edge.getFrom().getIdVertex() == end))
+                return edge;
+        }
+        return null;
     }
 
     public void addEdge(Edge edge) {
         edges.add(edge);
-    }
-
-    public void removeEdgesOfVertex(Vertex node, AnchorPane main) {
-        getVertexes().remove(node);
-        main.getChildren().remove(node);
-        for (int i = 0; i < getEdges().size(); i++) {
-            Edge edge = getEdges().get(i);
-            if (edge.getIdFrom() == node.getIdVertex() || edge.getIdTo() == node.getIdVertex()) {
-                main.getChildren().removeAll(edge, edge.getLabel());
-                getEdges().remove(edge);
-                i--;
-            }
-        }
     }
 
     public void setShowWeight(boolean bool) {
