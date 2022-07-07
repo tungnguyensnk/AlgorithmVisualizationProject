@@ -1,5 +1,7 @@
 package com.projectoop.step;
 
+import java.util.ArrayList;
+
 public class PseudoStep extends Step {
     public PseudoStep(String text) {
         super(text);
@@ -9,7 +11,17 @@ public class PseudoStep extends Step {
         super(i + "");
     }
 
-    @Override
-    public void run() {
+    public ArrayList<DetailStep> getDetail() {
+        return detail;
     }
+
+    public void setDetail(ArrayList<DetailStep> detail) {
+        this.detail = detail;
+    }
+
+    public void addStep(DetailStep detail) {
+        getDetail().add(detail);
+    }
+    ArrayList<DetailStep> detail = new ArrayList<>();
+
 }

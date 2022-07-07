@@ -10,7 +10,6 @@ public abstract class Algorithm {
     Graph data = new Graph();
 
     ArrayList<PseudoStep> pseudoSteps = new ArrayList<>();
-    ArrayList<DetailStep> detailSteps = new ArrayList<>();
 
     public Graph getData() {
         return data;
@@ -26,14 +25,6 @@ public abstract class Algorithm {
 
     public void setPseudoSteps(ArrayList<PseudoStep> pseudoSteps) {
         this.pseudoSteps = pseudoSteps;
-    }
-
-    public ArrayList<DetailStep> getDetailSteps() {
-        return detailSteps;
-    }
-
-    public void setDetailSteps(ArrayList<DetailStep> detailSteps) {
-        this.detailSteps = detailSteps;
     }
 
     public abstract void explore();

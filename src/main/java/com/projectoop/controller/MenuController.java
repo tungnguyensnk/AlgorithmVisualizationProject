@@ -1,43 +1,30 @@
 package com.projectoop.controller;
 
-import com.projectoop.Primary;
 import com.projectoop.algorithm.BruteForce;
-import com.projectoop.model.Edge;
 import com.projectoop.model.Graph;
 import com.projectoop.model.Vertex;
 import com.projectoop.step.DetailStep;
 import com.projectoop.step.PseudoStep;
-import com.projectoop.step.Step;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.robot.Robot;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 
-import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MenuController implements Initializable {
@@ -87,28 +74,23 @@ public class MenuController implements Initializable {
                         if (idPseudo != -1)
                             codeTrace.getChildren().get(idPseudo).setStyle("-fx-font-weight: bold");
                     });
+
+                    for (DetailStep detail : step.getDetail()) {
+                        Platform.runLater(() -> {
+                            if (detail.getText().length() > 0) {
+                                status.getChildren().clear();
+                                status.getChildren().add(new Text(detail.getText()));
+                            }
+                            Platform.runLater(detail::run);
+                        });
+                    }
                     Thread.sleep(2000);
                 }
                 return null;
             }
         };
 
-        Task<Void> task1 = new Task<>() {
-            @Override
-            public Void call() throws Exception {
-                for (DetailStep step : bf.getDetailSteps()) {
-                    Platform.runLater(() -> {
-                        status.getChildren().clear();
-                        status.getChildren().add(new Text(step.getText()));
-                        Platform.runLater(step::run);
-                    });
-                    Thread.sleep(2000);
-                }
-                return null;
-            }
-        };
         new Thread(task).start();
-        new Thread(task1).start();
     }
 
     static class InitMenu {
