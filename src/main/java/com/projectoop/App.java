@@ -1,5 +1,6 @@
 package com.projectoop;
 
+import com.projectoop.controller.AppController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,10 +19,10 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("app.fxml"));
         Parent root = loader.load();
-        Primary.setStage(stage);
+        AppController.setStage(stage);
         stage.setTitle("Algorithm Visualization");
         Scene scene = new Scene(root);
-        Primary.getStage().setScene(scene);
+        AppController.getStage().setScene(scene);
         /*
          * set màu và kiểu trong suốt để lấy bo góc tuyệt đối
          * tạo khả năng movable
@@ -36,10 +37,10 @@ public class App extends Application {
         });
         scene.setFill(Color.TRANSPARENT);
         stage.initStyle(StageStyle.TRANSPARENT);
-        Primary.getStage().setScene(scene);
-        Primary.getStage().setAlwaysOnTop(true);
+        AppController.getStage().setScene(scene);
+        AppController.getStage().setAlwaysOnTop(true);
         stage.show();
-        
+
     }
 
     public static void main(String[] args) {

@@ -11,7 +11,14 @@ public class Context {
         this.algorithm = algorithm;
     }
 
-    public void doExploration() {
+    public Context(Algorithm algorithm) {
+        this.algorithm = algorithm;
+    }
 
+    public Context() {
+    }
+
+    public void doExploration() {
+        algorithm.explore();
     }
 }

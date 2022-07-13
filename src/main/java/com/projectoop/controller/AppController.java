@@ -1,6 +1,5 @@
 package com.projectoop.controller;
 
-import com.projectoop.Primary;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -12,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -23,6 +23,16 @@ public class AppController implements Initializable {
     public ProgressBar process;
     public AnchorPane ap;
     public Label text;
+
+    private static Stage stage;
+
+    public static Stage getStage() {
+        return stage;
+    }
+
+    public static void setStage(Stage stage) {
+        AppController.stage = stage;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -54,9 +64,9 @@ public class AppController implements Initializable {
                         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("menu.fxml")));
                         Scene sc = new Scene(root);
                         sc.setFill(Color.TRANSPARENT);
-                        Primary.getStage().setScene(sc);
-                        Primary.getStage().setAlwaysOnTop(false);
-                        Primary.getStage().centerOnScreen();
+                        AppController.getStage().setScene(sc);
+                        AppController.getStage().setAlwaysOnTop(false);
+                        AppController.getStage().centerOnScreen();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

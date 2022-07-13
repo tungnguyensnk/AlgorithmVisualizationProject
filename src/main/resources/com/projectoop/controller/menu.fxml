@@ -2,51 +2,93 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.TextFlow?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-radius: 10px; -fx-background-color: #222426;-fx-fill: transparent;" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectoop.controller.MenuController">
-    <AnchorPane fx:id="main" layoutX="68.0" layoutY="44.0" maxHeight="486.0" maxWidth="1063.0" onMouseClicked="#addOrLink" prefHeight="486.0" prefWidth="1063.0" style="-fx-background-color: #dddad6; -fx-background-radius: 10px; -fx-cursor: hand;" />
-    <VBox fx:id="panel" layoutX="48.0" layoutY="561.0" prefHeight="225.0" prefWidth="100.0" style="-fx-cursor: hand; -fx-background-color: #368d5a; -fx-background-radius: 10px;" visible="false">
-        <Button mnemonicParsing="false" onMouseClicked="#run" prefHeight="37.0" prefWidth="100.0" style="-fx-background-radius: 10px; -fx-background-color: #368d5a; -fx-cursor: hand;" text="Run" />
-        <Button mnemonicParsing="false" prefHeight="37.0" prefWidth="100.0" style="-fx-background-radius: 10px; -fx-background-color: #368d5a; -fx-cursor: hand;" text="Example" />
-        <Button fx:id="showWeightButton" mnemonicParsing="false" onMouseClicked="#showWeight" prefHeight="37.0" prefWidth="100.0" style="-fx-background-radius: 10px; -fx-background-color: #368d5a; -fx-cursor: hand;" text="Show Weight" />
-        <Button mnemonicParsing="false" prefHeight="37.0" prefWidth="100.0" style="-fx-background-radius: 10px; -fx-background-color: #368d5a; -fx-cursor: hand;" text="Set algorithm" />
-        <Button mnemonicParsing="false" prefHeight="37.0" prefWidth="100.0" style="-fx-background-radius: 10px; -fx-background-color: #368d5a; -fx-cursor: hand;" text="Button" />
-        <Button mnemonicParsing="false" onMouseClicked="#exit" prefHeight="37.0" prefWidth="100.0" style="-fx-background-radius: 10px; -fx-background-color: #368d5a; -fx-cursor: hand;" text="Exit" />
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0"
+            prefWidth="1200.0" style="-fx-background-radius: 10px; -fx-background-color: #222426;-fx-fill: transparent;"
+            xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.projectoop.controller.MenuController">
+    <AnchorPane fx:id="main" layoutX="68.0" layoutY="44.0" maxHeight="486.0" maxWidth="1063.0"
+                onMouseClicked="#addOrLink" prefHeight="486.0" prefWidth="1063.0"
+                style="-fx-background-color: #dddad6; -fx-background-radius: 10px; -fx-cursor: hand;"/>
+    <VBox fx:id="panel" layoutX="48.0" layoutY="561.0" prefHeight="225.0" prefWidth="100.0"
+          style="-fx-cursor: hand; -fx-background-color: #368d5a; -fx-background-radius: 10px;" visible="false">
+        <Button mnemonicParsing="false" onMouseClicked="#run" prefHeight="37.0" prefWidth="100.0"
+                style="-fx-background-radius: 10px; -fx-background-color: #368d5a; -fx-cursor: hand;" text="Run"/>
+        <Button mnemonicParsing="false" onMouseClicked="#example" prefHeight="37.0" prefWidth="100.0"
+                style="-fx-background-radius: 10px; -fx-background-color: #368d5a; -fx-cursor: hand;" text="Example"/>
+        <Button fx:id="showWeightButton" mnemonicParsing="false" onMouseClicked="#showWeight" prefHeight="37.0"
+                prefWidth="100.0" style="-fx-background-radius: 10px; -fx-background-color: #368d5a; -fx-cursor: hand;"
+                text="Show Weight"/>
+        <Button mnemonicParsing="false" prefHeight="37.0" prefWidth="100.0"
+                style="-fx-background-radius: 10px; -fx-background-color: #368d5a; -fx-cursor: hand;"
+                text="Set algorithm" onMouseClicked="#showListAlgorithm"/>
+        <Button mnemonicParsing="false" onMouseClicked="#exportGraph" prefHeight="37.0" prefWidth="100.0"
+                style="-fx-background-radius: 10px; -fx-background-color: #368d5a; -fx-cursor: hand;"
+                text="Export Graph"/>
+        <Button mnemonicParsing="false" onMouseClicked="#importGraph" prefHeight="37.0" prefWidth="100.0"
+                style="-fx-background-radius: 10px; -fx-background-color: #368d5a; -fx-cursor: hand;"
+                text="Import Graph"/>
+        <Button mnemonicParsing="false" onMouseClicked="#exit" prefHeight="37.0" prefWidth="100.0"
+                style="-fx-background-radius: 10px; -fx-background-color: #368d5a; -fx-cursor: hand;" text="Exit"/>
     </VBox>
-    <TextFlow fx:id="status" layoutX="703.0" layoutY="561.0" prefHeight="51.0" prefWidth="478.0" style="-fx-background-color: #b55300; -fx-background-radius: 10px; -fx-padding: 10px;" visible="false" />
-    <TextFlow fx:id="codeTrace" layoutX="703.0" layoutY="622.0" prefHeight="166.0" prefWidth="478.0" style="-fx-background-color: #2596a7; -fx-background-radius: 10px; -fx-padding: 10px;" visible="false" />
-    <Button fx:id="showPanel" layoutX="11.0" layoutY="561.0" mnemonicParsing="false" onAction="#showPanel" prefHeight="225.0" prefWidth="52.0" style="-fx-background-color: #368d5a; -fx-cursor: hand;">
+    <VBox fx:id="algorithmSelect" layoutX="169.0" layoutY="634.0" prefHeight="71.0" prefWidth="100.0"
+          style="-fx-cursor: hand; -fx-background-color: #368d5a; -fx-background-radius: 10px;" visible="false">
+        <children>
+            <Button mnemonicParsing="false" onMouseClicked="#bruteForceSelect" prefHeight="37.0" prefWidth="100.0"
+                    style="-fx-background-radius: 10px; -fx-background-color: #368d5a; -fx-cursor: hand;"
+                    text="Brute Force"/>
+            <Button mnemonicParsing="false" onMouseClicked="#bitonicSelect" prefHeight="37.0" prefWidth="100.0"
+                    style="-fx-background-radius: 10px; -fx-background-color: #368d5a; -fx-cursor: hand;"
+                    text="Bitonic"/>
+        </children>
+    </VBox>
+    <TextFlow fx:id="status" layoutX="703.0" layoutY="561.0" prefHeight="51.0" prefWidth="478.0"
+              style="-fx-background-color: #b55300; -fx-background-radius: 10px; -fx-padding: 10px;" visible="false"/>
+    <TextFlow fx:id="codeTrace" layoutX="703.0" layoutY="622.0" prefHeight="166.0" prefWidth="478.0"
+              style="-fx-background-color: #2596a7; -fx-background-radius: 10px; -fx-padding: 10px;" visible="false"/>
+    <Button fx:id="showPanel" layoutX="11.0" layoutY="561.0" mnemonicParsing="false" onAction="#showPanel"
+            prefHeight="225.0" prefWidth="52.0" style="-fx-background-color: #368d5a; -fx-cursor: hand;">
         <font>
-            <Font size="24.0" />
+            <Font size="24.0"/>
         </font>
     </Button>
-    <Label fx:id="textOfShowPanel" layoutX="28.0" layoutY="659.0" onMouseClicked="#showPanel" style="-fx-cursor: hand;" text="&gt;">
+    <Label fx:id="textOfShowPanel" layoutX="28.0" layoutY="659.0" onMouseClicked="#showPanel" style="-fx-cursor: hand;"
+           text="&gt;">
         <font>
-            <Font size="24.0" />
+            <Font size="24.0"/>
         </font>
     </Label>
-    <Button fx:id="codeTraceButton" layoutX="1134.0" layoutY="622.0" mnemonicParsing="false" onAction="#showCodeTrace" prefHeight="165.0" prefWidth="52.0" style="-fx-background-color: #2596a7; -fx-cursor: hand;">
+    <Button fx:id="codeTraceButton" layoutX="1134.0" layoutY="622.0" mnemonicParsing="false" onAction="#showCodeTrace"
+            prefHeight="165.0" prefWidth="52.0" style="-fx-background-color: #2596a7; -fx-cursor: hand;">
         <font>
-            <Font size="24.0" />
+            <Font size="24.0"/>
         </font>
     </Button>
-    <Button fx:id="statusButton" layoutX="1134.0" layoutY="561.0" mnemonicParsing="false" onAction="#showStatus" prefHeight="46.0" prefWidth="52.0" style="-fx-background-color: #b55300; -fx-cursor: hand;">
+    <Button fx:id="statusButton" layoutX="1134.0" layoutY="561.0" mnemonicParsing="false" onAction="#showStatus"
+            prefHeight="46.0" prefWidth="52.0" style="-fx-background-color: #b55300; -fx-cursor: hand;">
         <font>
-            <Font size="24.0" />
+            <Font size="24.0"/>
         </font>
     </Button>
-    <Label fx:id="textOfShowStatus" layoutX="1152.0" layoutY="569.0" onMouseClicked="#showStatus" style="-fx-cursor: hand;" text="&lt;">
+    <Label fx:id="textOfShowStatus" layoutX="1152.0" layoutY="569.0" onMouseClicked="#showStatus"
+           style="-fx-cursor: hand;" text="&lt;">
         <font>
-            <Font size="24.0" />
+            <Font size="24.0"/>
         </font>
     </Label>
-    <Label fx:id="textOfShowCodeTrace" layoutX="1152.0" layoutY="687.0" onMouseClicked="#showCodeTrace" style="-fx-cursor: hand;" text="&lt;">
+    <Label fx:id="textOfShowCodeTrace" layoutX="1152.0" layoutY="687.0" onMouseClicked="#showCodeTrace"
+           style="-fx-cursor: hand;" text="&lt;">
         <font>
-            <Font size="24.0" />
+            <Font size="24.0"/>
         </font>
     </Label>
+    <Slider fx:id="stackStep" layoutX="204.0" layoutY="771.0"/>
+    <Label fx:id="labelStackStep" layoutX="235.0" layoutY="753.0" text="Ngăn xếp Step" textFill="WHITE"/>
+    <Label fx:id="speed" layoutX="344.0" layoutY="769.0" onMouseClicked="#changeSpeed" prefHeight="18.0"
+           prefWidth="78.0" text="Delay 500ms" textFill="WHITE"/>
 </AnchorPane>

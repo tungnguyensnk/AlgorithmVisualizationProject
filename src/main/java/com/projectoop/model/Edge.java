@@ -1,7 +1,6 @@
 package com.projectoop.model;
 
 import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
 public class Edge extends Line {
@@ -47,7 +46,7 @@ public class Edge extends Line {
         if (!Graph.isShowWeight())
             label.setVisible(false);
 
-        setFill(Color.BLUEVIOLET);
+        setStrokeWidth(3);
         setViewOrder(99);
 
         label.setStyle("-fx-background-radius: 20px; -fx-background-color: #dddad6;" +

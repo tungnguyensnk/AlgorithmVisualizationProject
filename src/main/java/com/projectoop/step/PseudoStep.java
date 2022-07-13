@@ -22,6 +22,7 @@ public class PseudoStep extends Step {
     public void addStep(DetailStep detail) {
         getDetail().add(detail);
     }
+
     ArrayList<DetailStep> detail = new ArrayList<>();
 
 }

@@ -1,7 +1,6 @@
 package com.projectoop.algorithm;
 
 import com.projectoop.model.Edge;
-import com.projectoop.model.Vertex;
 import com.projectoop.step.DetailStep;
 import com.projectoop.step.EdgeDetailStep;
 import com.projectoop.step.PseudoStep;
@@ -11,13 +10,8 @@ import java.util.ArrayList;
 
 public class BruteForce extends Algorithm {
 
-    ArrayList<String> pseudoTexts = new ArrayList<>();
-
-    public ArrayList<String> getPseudoTexts() {
-        return pseudoTexts;
-    }
-
     ArrayList<Edge> stackEdges = new ArrayList<>();
+    int currentCost = 0, cost = 0;
 
     public BruteForce() {
         pseudoTexts.add("function findTour(pos, mask)\n");
@@ -42,15 +36,17 @@ public class BruteForce extends Algorithm {
         PseudoStep step1 = new PseudoStep(0);
         pseudoSteps.add(step1);
         step1.addStep(new VertexDetailStep(
-                "Position = " + pos + ", bitmask = " + mask + ".", true, getData().getVertexes().get(pos)
+                "Position = " + pos + ", bitmask = " + Integer.toBinaryString(mask) + ".", true, getData().getVertexes().get(pos)
         ));
 
         //đã thăm hết node
         if (Integer.toBinaryString(mask).equals("1".repeat(getData().getVertexes().size()))) {
             PseudoStep step2 = new PseudoStep(1);
             pseudoSteps.add(step2);
+            currentCost += getData().getLength(pos, 0);
+            cost = currentCost;
             step2.addStep(new DetailStep("Every node has been visited. Returning the cost between the last and the " +
-                    "original vertex. The current minimal tour cost is 76."));
+                    "original vertex. The current minimal tour cost is " + currentCost + "."));
             stackEdges.add(getData().getEdgeById(pos, 0));
             step2.addStep(new EdgeDetailStep("", true, stackEdges.get(stackEdges.size() - 1)));
 
@@ -66,6 +62,7 @@ public class BruteForce extends Algorithm {
             step3x.addStep(new EdgeDetailStep("", false, stackEdges.get(stackEdges.size() - 1)));
             stackEdges.remove(stackEdges.size() - 1);
 
+            currentCost -= getData().getLength(pos, 0);
             return getData().getLength(pos, 0);
         }
 
@@ -87,18 +84,20 @@ public class BruteForce extends Algorithm {
                 ));
                 stackEdges.add(getData().getEdgeById(pos, i));
                 step4.addStep(new EdgeDetailStep("", true, stackEdges.get(stackEdges.size() - 1)));
+                currentCost += getData().getLength(pos, i);
                 ans = Integer.min(ans, findTour(i, mask | (1 << i)) + getData().getLength(pos, i));
+                currentCost -= getData().getLength(pos, i);
             }
         }
 
         PseudoStep step5 = new PseudoStep(4);
         pseudoSteps.add(step5);
-        step5.addStep(new DetailStep("With the current state (2, 111), The cost to complete the tour out of the" +
-                " remaining graph is 26, The current minimal tour cost is 76."));
+        step5.addStep(new DetailStep("With he current state (" + pos + ", " + Integer.toBinaryString(mask) + ")," +
+                " The cost to complete the tour out of the remaining graph is " + (cost - currentCost) + ", The current minimal tour cost is " + cost + "."));
         PseudoStep step6 = new PseudoStep(-1);
         pseudoSteps.add(step6);
         step6.addStep(new VertexDetailStep("Backtracking", false, getData().getVertexes().get(pos)));
-        if(stackEdges.size() > 0) {
+        if (stackEdges.size() > 0) {
             step6.addStep(new EdgeDetailStep("", false, stackEdges.get(stackEdges.size() - 1)));
             stackEdges.remove(stackEdges.size() - 1);
         }
