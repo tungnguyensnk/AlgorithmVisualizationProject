@@ -10,8 +10,8 @@ import java.util.ArrayList;
 
 public class BruteForce extends Algorithm {
 
-    ArrayList<Edge> stackEdges = new ArrayList<>();
-    int currentCost = 0, cost = 0;
+    private final ArrayList<Edge> stackEdges = new ArrayList<>();
+    private int currentCost = 0, cost = 0;
 
     public BruteForce() {
         pseudoTexts.add("function findTour(pos, mask)\n");

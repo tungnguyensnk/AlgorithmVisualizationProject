@@ -75,7 +75,7 @@ public class MenuController implements Initializable {
                     for (int i = 0; i < algorithm.getPseudoTexts().size(); i++) {
                         Text text = new Text(algorithm.getPseudoTexts().get(i));
                         text.setStyle("-fx-font-size: 16px");
-                        Platform.runLater(() -> codeTrace.getChildren().add(text));
+                        codeTrace.getChildren().add(text);
                     }
                 }
                 Platform.runLater(() -> {
@@ -213,25 +213,33 @@ public class MenuController implements Initializable {
     }
 
     public void bruteForceSelect() {
+        interrupt();
         algorithm = new BruteForce();
         algorithmSelect.setVisible(false);
-        Platform.runLater(() -> codeTrace.getChildren().clear());
-        for (int i = 0; i < algorithm.getPseudoTexts().size(); i++) {
-            Text text = new Text(algorithm.getPseudoTexts().get(i));
-            text.setStyle("-fx-font-size: 16px");
-            Platform.runLater(() -> codeTrace.getChildren().add(text));
-        }
+        Platform.runLater(() -> {
+            codeTrace.getChildren().clear();
+            for (int i = 0; i < algorithm.getPseudoTexts().size(); i++) {
+                Text text = new Text(algorithm.getPseudoTexts().get(i));
+                text.setStyle("-fx-font-size: 16px");
+                codeTrace.getChildren().add(text);
+            }
+            codeTrace.getChildren().forEach(node -> node.setStyle("-fx-font-weight: normal"));
+        });
     }
 
     public void bitonicSelect() {
+        interrupt();
         algorithm = new Bitonic();
         algorithmSelect.setVisible(false);
-        Platform.runLater(() -> codeTrace.getChildren().clear());
-        for (int i = 0; i < algorithm.getPseudoTexts().size(); i++) {
-            Text text = new Text(algorithm.getPseudoTexts().get(i));
-            text.setStyle("-fx-font-size: 16px");
-            Platform.runLater(() -> codeTrace.getChildren().add(text));
-        }
+        Platform.runLater(() -> {
+            codeTrace.getChildren().clear();
+            for (int i = 0; i < algorithm.getPseudoTexts().size(); i++) {
+                Text text = new Text(algorithm.getPseudoTexts().get(i));
+                text.setStyle("-fx-font-size: 16px");
+                codeTrace.getChildren().add(text);
+            }
+            codeTrace.getChildren().forEach(node -> node.setStyle("-fx-font-weight: normal"));
+        });
     }
 
     public void showListAlgorithm() {
@@ -356,12 +364,14 @@ public class MenuController implements Initializable {
     }
 
     public void showWeight() {
+        algorithmSelect.setVisible(false);
         showWeightButton.setText(Graph.isShowWeight() ? "Show Weight" : "Hide Weight");
         graph.setShowWeight(!Graph.isShowWeight());
     }
 
     public void example() {
         interrupt();
+        algorithmSelect.setVisible(false);
         main.getChildren().clear();
         graph = Graph.example();
         graph.getVertexes().forEach(node -> {
@@ -403,6 +413,7 @@ public class MenuController implements Initializable {
         if (thread != null)
             thread.interrupt();
         Platform.runLater(() -> {
+            algorithmSelect.setVisible(false);
             graph.getVertexes().forEach(stackPane -> Graph.highlight(stackPane, false));
             graph.getEdges().forEach(edge -> Graph.highlight(edge, false));
             codeTrace.getChildren().clear();
