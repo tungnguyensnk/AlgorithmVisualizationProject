@@ -4,7 +4,7 @@ import javafx.scene.control.Label;
 import javafx.scene.shape.Line;
 
 public class Edge extends Line {
-    Vertex from, to;
+    private Vertex from, to;
     int length;
 
     public Vertex getFrom() {
