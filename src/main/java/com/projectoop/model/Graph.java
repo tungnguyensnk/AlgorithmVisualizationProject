@@ -62,8 +62,12 @@ public class Graph {
     public static void highlight(Vertex vertex, boolean isLight) {
         //Image im = new Image(String.valueOf(Graph.class.getResource("circle.png")));
         //new ImagePattern(im)
-        ((Circle) vertex.getChildren().get(0)).setFill(isLight ? Color.rgb(113, 36, 164) : Color.DODGERBLUE);
-        ((Label) vertex.getChildren().get(1)).setTextFill(isLight ? Color.WHITE : Color.BLACK);
+        ((Circle) vertex.getChildren().get(0)).setFill(
+                isLight ? Color.rgb(113, 36, 164) : Color.DODGERBLUE
+        );
+        ((Label) vertex.getChildren().get(1)).setTextFill(
+                isLight ? Color.WHITE : Color.BLACK
+        );
     }
 
     public static void highlight(Edge edge, boolean isLight) {

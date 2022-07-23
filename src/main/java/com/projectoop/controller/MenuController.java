@@ -1,9 +1,6 @@
 package com.projectoop.controller;
 
-import com.projectoop.algorithm.Algorithm;
-import com.projectoop.algorithm.Bitonic;
-import com.projectoop.algorithm.BruteForce;
-import com.projectoop.algorithm.Context;
+import com.projectoop.algorithm.*;
 import com.projectoop.model.Edge;
 import com.projectoop.model.Graph;
 import com.projectoop.model.Vertex;
@@ -20,6 +17,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -35,6 +34,7 @@ import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MenuController implements Initializable {
@@ -53,11 +53,12 @@ public class MenuController implements Initializable {
     public Label speed;
     public Label labelStackStep;
     public VBox algorithmSelect;
+    public ImageView playButton;
     private int speedValue = 1;
     private final Robot robot = new Robot();
     private Thread thread;
     private Algorithm algorithm = null;
-    private boolean changeValueByApp = false;
+    private boolean changeValueByApp = false, isPlaying = false;
 
     public void changeSpeed() {
         speedValue = (speedValue + 1) % 6;
@@ -66,21 +67,31 @@ public class MenuController implements Initializable {
     }
 
     public void runStackStep() {
-        interrupt();
+        changeTypePlay(false);
+        if (thread != null)
+            thread.interrupt();
+        Platform.runLater(() -> {
+            algorithmSelect.setVisible(false);
+            graph.getVertexes().forEach(stackPane -> Graph.highlight(stackPane, false));
+            graph.getEdges().forEach(edge -> Graph.highlight(edge, false));
+            status.getChildren().clear();
+        });
         Task<Void> task = new Task<>() {
             @Override
-            public Void call() throws InterruptedException {
-                if (codeTrace.getChildren().isEmpty()) {
-                    Platform.runLater(() -> codeTrace.getChildren().clear());
+            public Void call() {
+                if (codeTrace.getChildren().isEmpty() ||
+                        codeTrace.getChildren().size() != algorithm.getPseudoTexts().size()) {
                     for (int i = 0; i < algorithm.getPseudoTexts().size(); i++) {
                         Text text = new Text(algorithm.getPseudoTexts().get(i));
-                        text.setStyle("-fx-font-size: 16px");
-                        codeTrace.getChildren().add(text);
+                        text.setStyle("-fx-font-size: 16px;-fx-font-weight: normal");
+                        Platform.runLater(() -> codeTrace.getChildren().add(text));
                     }
                 }
                 Platform.runLater(() -> {
                     codeTrace.getChildren().forEach(node -> node.setStyle("-fx-font-weight: normal"));
-                    int idPseudo = Integer.parseInt(algorithm.getPseudoSteps().get((int) stackStep.getValue()).getText());
+                    int idPseudo = Integer.parseInt(
+                            algorithm.getPseudoSteps().get((int) stackStep.getValue()).getText()
+                    );
                     if (idPseudo != -1)
                         codeTrace.getChildren().get(idPseudo).setStyle("-fx-font-weight: bold");
                 });
@@ -94,30 +105,6 @@ public class MenuController implements Initializable {
                             Platform.runLater(detail::run);
                         });
                     }
-                }
-
-                for (PseudoStep step : algorithm.getPseudoSteps()
-                        .subList((int) stackStep.getValue(), algorithm.getPseudoSteps().size())) {
-                    Platform.runLater(() -> {
-                        changeValueByApp = true;
-                        stackStep.adjustValue(algorithm.getPseudoSteps().indexOf(step));
-                        changeValueByApp = false;
-                        codeTrace.getChildren().forEach(node -> node.setStyle("-fx-font-weight: normal"));
-                        int idPseudo = Integer.parseInt(step.getText());
-                        if (idPseudo != -1)
-                            codeTrace.getChildren().get(idPseudo).setStyle("-fx-font-weight: bold");
-                    });
-
-                    for (DetailStep detail : step.getDetail()) {
-                        Platform.runLater(() -> {
-                            if (detail.getText().length() > 0) {
-                                status.getChildren().clear();
-                                status.getChildren().add(new Text(detail.getText()));
-                            }
-                            Platform.runLater(detail::run);
-                        });
-                    }
-                    Thread.sleep(speedValue * 500L);
                 }
                 return null;
             }
@@ -135,11 +122,19 @@ public class MenuController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save");
         if (new File(System.getProperty("user.home") + "/Documents").exists())
-            fileChooser.setInitialDirectory(new File(System.getProperty("user.home") + "/Documents"));
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Graph Data", "*.grd"));
+            fileChooser.setInitialDirectory(
+                    new File(System.getProperty("user.home") + "/Documents")
+            );
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Graph Data", "*.grd")
+        );
         File selectedFile = fileChooser.showSaveDialog(new Stage());
         if (selectedFile != null) {
-            try (BufferedWriter bw = Files.newBufferedWriter(selectedFile.toPath(), StandardCharsets.UTF_8)) {
+            try (BufferedWriter bw = Files.newBufferedWriter(
+                    selectedFile.toPath(),
+                    StandardCharsets.UTF_8
+            )) {
                 bw.write(sb.toString());
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -152,7 +147,9 @@ public class MenuController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Chọn File Data");
         if (new File(System.getProperty("user.home") + "/Documents").exists())
-            fileChooser.setInitialDirectory(new File(System.getProperty("user.home") + "/Documents"));
+            fileChooser.setInitialDirectory(
+                    new File(System.getProperty("user.home") + "/Documents")
+            );
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Graph Data", "*.grd"),
                 new FileChooser.ExtensionFilter("Tất cả", "*.*")
@@ -180,12 +177,16 @@ public class MenuController implements Initializable {
         for (int i = 0; i < tempGraph.getVertexes().size() - 1; i++) {
             for (int j = i + 1; j < tempGraph.getVertexes().size(); j++) {
                 if (i != j && graph.getEdgeById(i, j) == null) {
-                    Edge edge = new Edge(tempGraph.getVertexes().get(i), tempGraph.getVertexes().get(j));
+                    Edge edge = new Edge(
+                            tempGraph.getVertexes().get(i),
+                            tempGraph.getVertexes().get(j)
+                    );
                     graph.addEdge(edge);
                 }
             }
         }
 
+        changeTypePlay(false);
         interrupt();
         main.getChildren().clear();
         graph = tempGraph;
@@ -200,12 +201,13 @@ public class MenuController implements Initializable {
         });
         render(graph);
 
-        algorithm = new BruteForce();
         algorithm.setData(graph);
         new Context(algorithm).doExploration();
+        changeValueByApp = true;
         stackStep.setMax(algorithm.getPseudoSteps().size() - 1);
         stackStep.setBlockIncrement(1);
         stackStep.setValue(0);
+        changeValueByApp = false;
         stackStep.valueProperty().addListener(observable -> {
             if (!changeValueByApp)
                 runStackStep();
@@ -213,37 +215,56 @@ public class MenuController implements Initializable {
     }
 
     public void bruteForceSelect() {
-        interrupt();
-        algorithm = new BruteForce();
-        algorithmSelect.setVisible(false);
-        Platform.runLater(() -> {
-            codeTrace.getChildren().clear();
-            for (int i = 0; i < algorithm.getPseudoTexts().size(); i++) {
-                Text text = new Text(algorithm.getPseudoTexts().get(i));
-                text.setStyle("-fx-font-size: 16px");
-                codeTrace.getChildren().add(text);
-            }
-            codeTrace.getChildren().forEach(node -> node.setStyle("-fx-font-weight: normal"));
-        });
+        algorithmSelect(new BruteForce());
     }
 
     public void bitonicSelect() {
+        algorithmSelect(new Bitonic());
+    }
+
+    public void christofidesSelect() {
+        algorithmSelect(new Christofides());
+    }
+
+    public void algorithmSelect(Algorithm algo) {
+        changeTypePlay(false);
         interrupt();
-        algorithm = new Bitonic();
+        algorithm = algo;
         algorithmSelect.setVisible(false);
         Platform.runLater(() -> {
             codeTrace.getChildren().clear();
             for (int i = 0; i < algorithm.getPseudoTexts().size(); i++) {
                 Text text = new Text(algorithm.getPseudoTexts().get(i));
-                text.setStyle("-fx-font-size: 16px");
-                codeTrace.getChildren().add(text);
+                text.setStyle("-fx-font-size: 16px;-fx-font-weight: normal");
+                Platform.runLater(() -> codeTrace.getChildren().add(text));
             }
-            codeTrace.getChildren().forEach(node -> node.setStyle("-fx-font-weight: normal"));
         });
     }
 
     public void showListAlgorithm() {
         Platform.runLater(() -> algorithmSelect.setVisible(!algorithmSelect.isVisible()));
+    }
+
+    public void play() {
+        if (isPlaying)
+            interrupt();
+        changeTypePlay(!isPlaying);
+    }
+
+    public void changeTypePlay(boolean isPlaying) {
+        Image image;
+        if (isPlaying && this.isPlaying != isPlaying) {
+            image = new Image(Objects.requireNonNull(
+                    getClass().getResource("pauseButton.jpg")
+            ).toString());
+            runStepByStep();
+        } else {
+            image = new Image(Objects.requireNonNull(
+                    getClass().getResource("playButton.jpg")
+            ).toString());
+        }
+        this.isPlaying = isPlaying;
+        playButton.setImage(image);
     }
 
     static class InitMenu {
@@ -316,10 +337,13 @@ public class MenuController implements Initializable {
     public void addOrLink(MouseEvent mouseEvent) {
         Node cur = mouseEvent.getPickResult().getIntersectedNode();
         if (cur == main) {
+            changeTypePlay(false);
             interrupt();
             Vertex node = new Vertex();
-            double x = robot.getMouseX() - main.localToScreen(main.getBoundsInLocal()).getMinX() - 22;
-            double y = robot.getMouseY() - main.localToScreen(main.getBoundsInLocal()).getMinY() - 22;
+            double x = robot.getMouseX() -
+                    main.localToScreen(main.getBoundsInLocal()).getMinX() - 22;
+            double y = robot.getMouseY() -
+                    main.localToScreen(main.getBoundsInLocal()).getMinY() - 22;
             x = Math.min(x, main.getPrefWidth() - 44);
             y = Math.min(y, main.getPrefHeight() - 44);
             node.setLayoutX(x);
@@ -339,7 +363,9 @@ public class MenuController implements Initializable {
     }
 
     private void refreshIdVertex() {
-        graph.getVertexes().forEach(stackPane -> stackPane.setIdVertex(graph.getVertexes().indexOf(stackPane)));
+        graph.getVertexes().forEach(stackPane ->
+                stackPane.setIdVertex(graph.getVertexes().indexOf(stackPane))
+        );
     }
 
     private void refreshVertex(Vertex vertex) {
@@ -370,6 +396,7 @@ public class MenuController implements Initializable {
     }
 
     public void example() {
+        changeTypePlay(false);
         interrupt();
         algorithmSelect.setVisible(false);
         main.getChildren().clear();
@@ -435,9 +462,13 @@ public class MenuController implements Initializable {
             if (!changeValueByApp)
                 runStackStep();
         });
+        changeTypePlay(true);
+    }
+
+    public void runStepByStep() {
         Task<Void> task = new Task<>() {
             @Override
-            public Void call() throws Exception {
+            public Void call() {
                 Platform.runLater(() -> codeTrace.getChildren().clear());
                 if (!initCodeTrace.isShow)
                     showCodeTrace();
@@ -445,10 +476,20 @@ public class MenuController implements Initializable {
                     showStatus();
                 for (int i = 0; i < algorithm.getPseudoTexts().size(); i++) {
                     Text text = new Text(algorithm.getPseudoTexts().get(i));
-                    text.setStyle("-fx-font-size: 16px");
+                    text.setStyle("-fx-font-size: 16px;-fx-font-weight: normal");
                     Platform.runLater(() -> codeTrace.getChildren().add(text));
                 }
-                for (PseudoStep step : algorithm.getPseudoSteps()) {
+                for (PseudoStep step : algorithm.getPseudoSteps()
+                        .subList((int) stackStep.getValue(), algorithm.getPseudoSteps().size())) {
+                    if (codeTrace.getChildren().isEmpty() ||
+                            codeTrace.getChildren().size() > algorithm.getPseudoTexts().size()) {
+                        Platform.runLater(() -> codeTrace.getChildren().clear());
+                        for (int i = 0; i < algorithm.getPseudoTexts().size(); i++) {
+                            Text text = new Text(algorithm.getPseudoTexts().get(i));
+                            text.setStyle("-fx-font-size: 16px;-fx-font-weight: normal");
+                            Platform.runLater(() -> codeTrace.getChildren().add(text));
+                        }
+                    }
                     Platform.runLater(() -> {
                         changeValueByApp = true;
                         stackStep.adjustValue(algorithm.getPseudoSteps().indexOf(step));
@@ -468,8 +509,19 @@ public class MenuController implements Initializable {
                             Platform.runLater(detail::run);
                         });
                     }
-                    Thread.sleep(speedValue * 500L);
+                    try {
+                        Thread.sleep(speedValue * 500L);
+                    } catch (InterruptedException e) {
+                        return null;
+                    }
                 }
+                graph.getVertexes().forEach(stackPane -> Graph.highlight(stackPane, true));
+                graph.getEdges().forEach(edge -> Graph.highlight(edge, false));
+                BruteForce bf = new BruteForce();
+                bf.setData(graph);
+                new Context(bf).doExploration();
+
+                bf.getFindTour().forEach(edge -> Graph.highlight(edge, true));
                 return null;
             }
         };

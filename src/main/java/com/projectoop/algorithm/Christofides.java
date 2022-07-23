@@ -1,166 +1,183 @@
 package com.projectoop.algorithm;
 
+import com.projectoop.step.DetailStep;
+import com.projectoop.step.EdgeDetailStep;
+import com.projectoop.step.PseudoStep;
+import com.projectoop.step.VertexDetailStep;
+
 import java.util.*;
 
 public class Christofides extends Algorithm {
 
-    private final ArrayList<ArrayList<Double>> adjMatrix;
-    private final ArrayList<ArrayList<Double>> e;
-    private ArrayList<ArrayList<Integer>> mstAdjList;
-    private ArrayList<Integer> eulersPath;
-    private double pathLength;
-
     public Christofides() {
-        this.adjMatrix = new ArrayList<>();
-        this.e = new ArrayList<>();
-        this.pathLength = -1d;
-
-        System.out.println("Broj gradova: " + getData().getVertexes().size());
-        for (int i = 0; i < getData().getVertexes().size(); i++) {
-            this.adjMatrix.add(new ArrayList<>(Collections.nCopies(getData().getVertexes().size(), 0d)));
-        }
-        for (int i = 0; i < getData().getVertexes().size(); i++) {
-            for (int j = i; j < getData().getVertexes().size(); j++) {
-                if (i == j) {
-                    continue;
-                }
-                double d = getData().getLength(i, j);
-                adjMatrix.get(i).set(j, d);
-                adjMatrix.get(j).set(i, d);
-                e.add(new ArrayList<>(Arrays.asList((double) i, (double) j, d)));
-            }
-        }
-    }
-
-    public void eulersPath() {
-        Stack<Integer> currentPath = new Stack<>();
-        Stack<Integer> eulersPath = new Stack<>();
-        ArrayList<ArrayList<Integer>> mstCopy = mstAdjList;
-
-        currentPath.push(0);
-        while (!currentPath.isEmpty()) {
-
-            int u = currentPath.peek();
-            if (mstCopy.get(u).size() == 0) {
-                eulersPath.push(u);
-                currentPath.pop();
-
-            } else {
-                currentPath.push(mstCopy.get(u).get(0));
-                mstCopy.get(u).remove(0);
-            }
-        }
-        ArrayList<Integer> result = new ArrayList<>();
-
-        while (!eulersPath.isEmpty()) {
-            result.add(eulersPath.peek());
-            eulersPath.pop();
-        }
-        this.eulersPath = result;
-    }
-
-    public void eulerToHamilton() {
-
-        Set<Integer> unique = new LinkedHashSet<>(this.eulersPath);
-        this.eulersPath.clear();
-        this.eulersPath.addAll(unique);
-
-        double length = 0;
-        for (int i = 0; i < eulersPath.size() - 1; i++) {
-            length += adjMatrix.get(eulersPath.get(i)).get(eulersPath.get(i + 1));
-        }
-        length += adjMatrix.get(0).get(eulersPath.get(eulersPath.size() - 1));
-        this.pathLength = length;
-    }
-
-    public void greedyPerfectMatching() {
-
-        ArrayList<Integer> mstOddVertices = new ArrayList<>();
-        for (int i = 0; i < this.mstAdjList.size(); i++) {
-            if (mstAdjList.get(i).size() % 2 == 1) {
-                mstOddVertices.add(i);
-            }
-        }
-        while (!mstOddVertices.isEmpty()) {
-
-            double minDistance = Double.MAX_VALUE;
-            int firstNode = mstOddVertices.get(0);
-            int minDistanceNodeIndex = -1;
-
-            for (int i = 0; i < mstOddVertices.size(); i++) {
-                if (firstNode != mstOddVertices.get(i) &&
-                        adjMatrix.get(firstNode).get(mstOddVertices.get(i)) < minDistance) {
-                    minDistance = adjMatrix.get(firstNode).get(mstOddVertices.get(i));
-                    minDistanceNodeIndex = i;
-                }
-            }
-            this.mstAdjList.get(firstNode).add(mstOddVertices.get(minDistanceNodeIndex));
-            this.mstAdjList.get(mstOddVertices.get(minDistanceNodeIndex)).add(firstNode);
-            mstOddVertices.remove(minDistanceNodeIndex);
-            mstOddVertices.remove(0);
-        }
-    }
-
-
-    public void kruskalMst() {
-
-        this.e.sort(Comparator.comparing(o -> o.get(2)));
-
-        ArrayList<ArrayList<Integer>> res = new ArrayList<>();
-        List<Integer> referenceNodes = new ArrayList<>();
-
-        for (int i = 0; i < this.adjMatrix.size(); i++) {
-            referenceNodes.add(i);
-        }
-
-        List<Integer> weights = new ArrayList<>(Collections.nCopies(this.adjMatrix.size(), 0));
-
-        for (ArrayList<Double> doubles : this.e) {
-            int firstNode = (int) Math.round(doubles.get(0));
-            int secondNode = (int) Math.round(doubles.get(1));
-            int referenceNodeOne = referenceNodes.get(firstNode);
-            int temp = firstNode;
-
-            while (temp != referenceNodeOne) {
-                temp = referenceNodeOne;
-                referenceNodeOne = referenceNodes.get(temp);
-            }
-
-            int referenceNodeTwo = referenceNodes.get(secondNode);
-            temp = secondNode;
-            while (temp != referenceNodeTwo) {
-                temp = referenceNodeTwo;
-                referenceNodeTwo = referenceNodes.get(temp);
-            }
-
-            if (referenceNodeOne != referenceNodeTwo) {
-
-                int low;
-                int high;
-                if (weights.get(referenceNodeOne) < weights.get(referenceNodeTwo)) {
-                    low = referenceNodeTwo;
-                    high = referenceNodeOne;
-                } else {
-                    low = referenceNodeOne;
-                    high = referenceNodeTwo;
-                }
-                referenceNodes.set(low, high);
-                weights.set(high, weights.get(high) + weights.get(low));
-                res.add(new ArrayList<>(Arrays.asList(firstNode, secondNode)));
-            }
-        }
-        this.mstAdjList = new ArrayList<>(this.adjMatrix.size());
-        for (int i = 0; i < this.adjMatrix.size(); i++) {
-            mstAdjList.add(new ArrayList<>());
-        }
-        for (ArrayList<Integer> re : res) {
-            mstAdjList.get(re.get(0)).add(re.get(1));
-            mstAdjList.get(re.get(1)).add(re.get(0));
-        }
+        pseudoTexts.add("Get the MST of the (complete) graph\n");
+        pseudoTexts.add("Find odd degree vertices in the MST\n");
+        pseudoTexts.add("Find a min cost matching among those vertices\n");
+        pseudoTexts.add("Obtain a eulerian tour using edges used in MST + match\n");
+        pseudoTexts.add("""
+                Obtain a TSP tour from the obtained eulerian tour and
+                skip repeated vertices
+                """);
     }
 
     @Override
     public void explore() {
+        ArrayList<Integer> finalAns = new ArrayList<>();
+        ArrayList<Integer> dfsTrack = new ArrayList<>();
 
+        boolean[] visitedNodes = new boolean[getData().getVertexes().size()];
+
+        for (int i = 0; i < getData().getVertexes().size(); i++) {
+            visitedNodes[i] = false;
+        }
+        int[] parent = primMST();
+        PseudoStep step1 = new PseudoStep(0);
+        pseudoSteps.add(step1);
+        step1.addStep(
+                new DetailStep("Creat MST of the graph" + Arrays.toString(primMST()) + ".")
+        );
+        dfs(parent, 0, visitedNodes, finalAns, dfsTrack);
+        Object[] dfsTrackArray = dfsTrack.toArray();
+
+        for (int i = 1; i < dfsTrackArray.length; i++) {
+            int source = (int) dfsTrackArray[i - 1];
+            int destination = (int) dfsTrackArray[i];
+            PseudoStep step4 = new PseudoStep(1);
+            pseudoSteps.add(step4);
+            step4.addStep(new VertexDetailStep(
+                    "The dfsTrack tour of the MST is " + dfsTrack + ".",
+                    true,
+                    getData().getVertexes().get(source)
+            ));
+            step4.addStep(
+                    new EdgeDetailStep(
+                            "",
+                            true,
+                            getData().getEdgeById(source, destination)
+                    )
+            );
+        }
+        PseudoStep step4 = new PseudoStep(1);
+        pseudoSteps.add(step4);
+        step4.addStep(new VertexDetailStep(
+                "The dfsTrack tour of the MST is " + dfsTrack + ".",
+                true,
+                getData().getVertexes().get((int) dfsTrackArray[dfsTrackArray.length - 1])
+        ));
+
+        finalAns.add(0);
+        int[] exsited = new int[getData().getVertexes().size()];
+
+
+        for (int i = 0; i < dfsTrackArray.length; i++) {
+            if (exsited[dfsTrack.get(i)] == 0) {
+                exsited[dfsTrack.get(i)] = 1;
+            } else {
+                PseudoStep step5 = new PseudoStep(2);
+                pseudoSteps.add(step5);
+                step5.addStep(new EdgeDetailStep(
+                        "Found approximation TSP tour " + finalAns,
+                        true,
+                        getData().getEdgeById((int) dfsTrackArray[i - 1], (int) dfsTrackArray[i])
+                ));
+                step5.addStep(new EdgeDetailStep(
+                        "Found approximation TSP tour " + finalAns,
+                        true,
+                        getData().getEdgeById((int) dfsTrackArray[i], (int) dfsTrackArray[i + 1])
+                ));
+                step5.addStep(new EdgeDetailStep(
+                        "Found approximation TSP tour " + finalAns,
+                        true,
+                        getData().getEdgeById((int) dfsTrackArray[i - 1], (int) dfsTrackArray[i + 1])
+                ));
+            }
+        }
+
+        PseudoStep end = new PseudoStep(-1);
+        end.addStep(new EdgeDetailStep(
+                "Found approximation TSP tour " + finalAns + " with cost = " + calculate(finalAns),
+                true,
+                getData().getEdgeById((int) dfsTrackArray[dfsTrackArray.length - 1], 0)
+        ));
+        pseudoSteps.add(end);
+    }
+
+    private int minKey(int[] key, boolean[] mstSet) {
+        int min = Integer.MAX_VALUE;
+        int minIndex = -1;
+
+        for (int v = 0; v < getData().getVertexes().size(); v++) {
+            if (!mstSet[v] && key[v] < min) {
+                min = key[v];
+                minIndex = v;
+            }
+        }
+        return minIndex;
+    }
+
+    private int[] primMST() {
+        int V = getData().getVertexes().size();
+        int[] parent = new int[V];
+        int[] key = new int[V];
+        boolean[] mstSet = new boolean[V];
+
+        for (int i = 0; i < V; i++) {
+            key[i] = Integer.MAX_VALUE;
+            mstSet[i] = false;
+        }
+
+        key[0] = 0;
+        parent[0] = -1;
+
+        for (int count = 0; count < V - 1; count++) {
+            int u = minKey(key, mstSet);
+            mstSet[u] = true;
+            int weight;
+
+            for (int v = 0; v < V; v++) {
+                weight = getData().getLength(u, v) != -1 ? getData().getLength(u, v) : 0;
+                if (weight != 0 && !mstSet[v] && weight < key[v]) {
+                    parent[v] = u;
+                    key[v] = weight;
+                }
+            }
+        }
+
+        return parent;
+    }
+
+    private void dfs(int[] parent, int startingVertex, boolean[] visitedNodes, ArrayList<Integer> finalAns, ArrayList<Integer> dfsTrack) // getting the preorder walk of the MST using DFS
+    {
+        finalAns.add(startingVertex);
+        dfsTrack.add(startingVertex);
+        visitedNodes[startingVertex] = true;
+
+        int count = 0;
+
+        for (int i = 0; i < getData().getVertexes().size(); i++) {
+            if (i == startingVertex) {
+                continue;
+            }
+            if (parent[i] == startingVertex) {
+                count++;
+                if (count > 1) {
+                    dfsTrack.add(startingVertex);
+                }
+                if (visitedNodes[i]) {
+                    continue;
+                }
+                dfs(parent, i, visitedNodes, finalAns, dfsTrack);
+            }
+        }
+    }
+
+    private int calculate(ArrayList<Integer> finalAns) {
+        int total = 0;
+        Object[] finalAnsArray = finalAns.toArray();
+        for (int i = 1; i < finalAnsArray.length; i++) {
+            total = total + getData().getLength((int) finalAnsArray[i - 1], (int) finalAnsArray[i]);
+        }
+
+        return total;
     }
 }

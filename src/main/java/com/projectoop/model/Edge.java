@@ -37,7 +37,8 @@ public class Edge extends Line {
         setTo(vertex2);
         setFrom(vertex1);
         length = (int) Math.sqrt(
-                Math.pow(getStartX() - getEndX(), 2) + Math.pow(getStartY() - getEndY(), 2));
+                Math.pow(getStartX() - getEndX(), 2) + Math.pow(getStartY() - getEndY(), 2)
+        );
 
         label.setText("   " + length + "   ");
         label.setLayoutX((getStartX() + getEndX()) / 2 - 20);

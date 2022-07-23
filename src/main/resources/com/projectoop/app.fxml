@@ -5,12 +5,18 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="ap" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="247.0" prefWidth="452.0" style="-fx-background-radius: 10px; -fx-background-color: rgb(85, 180, 176);" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.projectoop.controller.AppController">
-    <Label alignment="CENTER" layoutX="42.0" layoutY="211.0" prefHeight="21.0" prefWidth="367.0" text="© 2022 All Rights Reserved | Design by  うれしい" textAlignment="CENTER" textFill="WHITE" />
-    <ProgressBar fx:id="process" layoutX="126.0" layoutY="154.0" prefWidth="200.0" progress="0.0" style="-fx-background-color: rgba(0, 0, 0, 0.4); -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-border-color: white; -fx-border-width: 2; -fx-text-fill: white;" />
-   <Label fx:id="text" layoutX="81.0" layoutY="86.0" text="Algorithm Visualization">
-      <font>
-         <Font name=".VnCentury Schoolbook Bold Italic" size="23.0" />
-      </font>
-   </Label>
+<AnchorPane fx:id="ap" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="247.0" prefWidth="452.0"
+            style="-fx-background-radius: 10px; -fx-background-color: rgb(85, 180, 176);"
+            xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.projectoop.controller.AppController">
+    <Label alignment="CENTER" layoutX="42.0" layoutY="211.0" prefHeight="21.0" prefWidth="367.0"
+           text="© 2022 All Rights Reserved | Design by  うれしい" textAlignment="CENTER" textFill="WHITE"/>
+    <ProgressBar fx:id="process" layoutX="126.0" layoutY="154.0" prefWidth="200.0" progress="0.0"
+                 style="-fx-background-color: rgba(0, 0, 0, 0.4); -fx-background-radius: 5px; -fx-border-radius: 5px; -fx-border-color: white; -fx-border-width: 2; -fx-text-fill: white;"/>
+    <Label fx:id="text" layoutX="81.0" layoutY="86.0" text="Algorithm Visualization">
+        <font>
+            <Font name=".VnCentury Schoolbook Bold Italic" size="23.0"/>
+        </font>
+    </Label>
 </AnchorPane>

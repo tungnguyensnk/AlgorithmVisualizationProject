@@ -61,7 +61,9 @@ public class AppController implements Initializable {
 
                 Platform.runLater(() -> {
                     try {
-                        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("menu.fxml")));
+                        Parent root = FXMLLoader.load(
+                                Objects.requireNonNull(getClass().getResource("menu.fxml"))
+                        );
                         Scene sc = new Scene(root);
                         sc.setFill(Color.TRANSPARENT);
                         AppController.getStage().setScene(sc);
@@ -74,6 +76,7 @@ public class AppController implements Initializable {
                 return null;
             }
         };
+
         process.progressProperty().bind(task.progressProperty());
         new Thread(task).start();
     }
