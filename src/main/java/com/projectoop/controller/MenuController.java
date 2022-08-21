@@ -290,12 +290,12 @@ public class MenuController implements Initializable {
         Image image;
         if (isPlaying && this.isPlaying != isPlaying) {
             image = new Image(Objects.requireNonNull(
-                    getClass().getResource("pauseButton.jpg")
+                    getClass().getResource("pauseButton.png")
             ).toString());
             runStepByStep();
         } else {
             image = new Image(Objects.requireNonNull(
-                    getClass().getResource("playButton.jpg")
+                    getClass().getResource("playButton.png")
             ).toString());
         }
         this.isPlaying = isPlaying;
