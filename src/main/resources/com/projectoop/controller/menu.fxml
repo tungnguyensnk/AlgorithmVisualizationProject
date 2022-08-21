@@ -95,6 +95,6 @@
            prefWidth="78.0" text="Delay 500ms" textFill="WHITE"/>
     <ImageView fx:id="playButton" fitHeight="32.0" fitWidth="32.0" layoutX="169.0" layoutY="765.0" onMouseClicked="#play"
                pickOnBounds="true" preserveRatio="true">
-        <Image url="@playButton.jpg"/>
+        <Image url="@playButton.png"/>
     </ImageView>
 </AnchorPane>
