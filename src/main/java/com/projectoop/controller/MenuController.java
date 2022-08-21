@@ -37,6 +37,9 @@ import java.nio.file.Files;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+/**
+ * Controller của menu view
+ */
 public class MenuController implements Initializable {
     public Label textOfShowPanel;
     public Button showPanel;
@@ -60,14 +63,22 @@ public class MenuController implements Initializable {
     private Algorithm algorithm = null;
     private boolean changeValueByApp = false, isPlaying = false;
 
+    /**
+     * thay đổi hệ số tốc độ
+     */
     public void changeSpeed() {
         speedValue = (speedValue + 1) % 6;
         speedValue = speedValue == 0 ? 1 : speedValue;
         speed.setText("Delay " + (500 * speedValue) + "ms");
     }
 
+    /**
+     * load trạng thái của đồ thị khi người dùng thay đổi stack
+     */
     public void runStackStep() {
         changeTypePlay(false);
+
+        //interrupt nhưng không clear pseudo code
         if (thread != null)
             thread.interrupt();
         Platform.runLater(() -> {
@@ -87,6 +98,8 @@ public class MenuController implements Initializable {
                         Platform.runLater(() -> codeTrace.getChildren().add(text));
                     }
                 }
+
+                //trạng thái pseudo step hiện tại
                 Platform.runLater(() -> {
                     codeTrace.getChildren().forEach(node -> node.setStyle("-fx-font-weight: normal"));
                     int idPseudo = Integer.parseInt(
@@ -95,6 +108,8 @@ public class MenuController implements Initializable {
                     if (idPseudo != -1)
                         codeTrace.getChildren().get(idPseudo).setStyle("-fx-font-weight: bold");
                 });
+
+                //trạng thái đồ thị và detail step hiện tại
                 for (int i = 0; i <= stackStep.getValue(); i++) {
                     for (DetailStep detail : algorithm.getPseudoSteps().get(i).getDetail()) {
                         Platform.runLater(() -> {
@@ -114,6 +129,9 @@ public class MenuController implements Initializable {
         thread.start();
     }
 
+    /**
+     * in tọa độ đỉnh ra file
+     */
     public void exportGraph() {
         if (graph.getVertexes().size() == 0)
             return;
@@ -142,6 +160,9 @@ public class MenuController implements Initializable {
         }
     }
 
+    /**
+     * nhập graph từ file
+     */
     public void importGraph() {
         Graph tempGraph = new Graph();
         FileChooser fileChooser = new FileChooser();
@@ -174,6 +195,7 @@ public class MenuController implements Initializable {
             e.printStackTrace();
         }
 
+        //thêm các đỉnh và cạnh vào tempGraph
         for (int i = 0; i < tempGraph.getVertexes().size() - 1; i++) {
             for (int j = i + 1; j < tempGraph.getVertexes().size(); j++) {
                 if (i != j && graph.getEdgeById(i, j) == null) {
@@ -190,6 +212,8 @@ public class MenuController implements Initializable {
         interrupt();
         main.getChildren().clear();
         graph = tempGraph;
+
+        //tạo khả năng xóa cho các node
         graph.getVertexes().forEach(node -> {
             node.setOnMouseEntered(mouseEvent1 -> node.requestFocus());
             node.setOnKeyPressed(keyEvent -> {
@@ -201,8 +225,11 @@ public class MenuController implements Initializable {
         });
         render(graph);
 
+        //lấy danh sách step
         algorithm.setData(graph);
-        new Context(algorithm).doExploration();
+        Context context = new Context();
+        context.setAlgorithm(algorithm);
+        context.doExploration();
         changeValueByApp = true;
         stackStep.setMax(algorithm.getPseudoSteps().size() - 1);
         stackStep.setBlockIncrement(1);
@@ -226,6 +253,9 @@ public class MenuController implements Initializable {
         algorithmSelect(new Christofides());
     }
 
+    /**
+     * lựa chọn thuật toán
+     */
     public void algorithmSelect(Algorithm algo) {
         changeTypePlay(false);
         interrupt();
@@ -246,11 +276,16 @@ public class MenuController implements Initializable {
     }
 
     public void play() {
+        if (graph.getVertexes().isEmpty() || algorithm == null)
+            return;
         if (isPlaying)
             interrupt();
         changeTypePlay(!isPlaying);
     }
 
+    /**
+     * thay đổi trạng thái của button play
+     */
     public void changeTypePlay(boolean isPlaying) {
         Image image;
         if (isPlaying && this.isPlaying != isPlaying) {
@@ -267,13 +302,13 @@ public class MenuController implements Initializable {
         playButton.setImage(image);
     }
 
-    static class InitMenu {
-        TranslateTransition translateTransition;
-        FadeTransition fadeTransition;
-        RotateTransition rotateTransition;
+    private static class InitMenu {
+        private final TranslateTransition translateTransition;
+        private final FadeTransition fadeTransition;
+        private final RotateTransition rotateTransition;
 
-        Node container;
-        boolean isShow = false;
+        private final Node container;
+        private boolean isShow = false;
 
         public InitMenu(Node container, Label label) {
             this.container = container;
@@ -334,6 +369,9 @@ public class MenuController implements Initializable {
         initCodeTrace.play(-50);
     }
 
+    /**
+     * thêm đỉnh mới
+     */
     public void addOrLink(MouseEvent mouseEvent) {
         Node cur = mouseEvent.getPickResult().getIntersectedNode();
         if (cur == main) {
@@ -362,6 +400,9 @@ public class MenuController implements Initializable {
         }
     }
 
+    /**
+     * set lại id cho đỉnh khi xóa
+     */
     private void refreshIdVertex() {
         graph.getVertexes().forEach(stackPane ->
                 stackPane.setIdVertex(graph.getVertexes().indexOf(stackPane))
@@ -414,7 +455,9 @@ public class MenuController implements Initializable {
 
         if (algorithm != null) {
             algorithm.setData(graph);
-            new Context(algorithm).doExploration();
+            Context context = new Context();
+            context.setAlgorithm(algorithm);
+            context.doExploration();
             stackStep.setMax(algorithm.getPseudoSteps().size() - 1);
             stackStep.setBlockIncrement(1);
             changeValueByApp = true;
@@ -427,6 +470,9 @@ public class MenuController implements Initializable {
         }
     }
 
+    /**
+     * show graph
+     */
     private void render(Graph graph) {
         graph.getVertexes().forEach(stackPane -> main.getChildren().add(stackPane));
         graph.getEdges().forEach(edge -> main.getChildren().addAll(edge.getLabel(), edge));
@@ -436,6 +482,9 @@ public class MenuController implements Initializable {
         System.exit(0);
     }
 
+    /**
+     * hàm ngắt luồng step đang chạy
+     */
     private void interrupt() {
         if (thread != null)
             thread.interrupt();
@@ -454,7 +503,9 @@ public class MenuController implements Initializable {
             return;
 
         algorithm.setData(graph);
-        new Context(algorithm).doExploration();
+        Context context = new Context();
+        context.setAlgorithm(algorithm);
+        context.doExploration();
         stackStep.setMax(algorithm.getPseudoSteps().size() - 1);
         stackStep.setBlockIncrement(1);
         stackStep.setValue(0);
@@ -519,9 +570,12 @@ public class MenuController implements Initializable {
                 graph.getEdges().forEach(edge -> Graph.highlight(edge, false));
                 BruteForce bf = new BruteForce();
                 bf.setData(graph);
-                new Context(bf).doExploration();
+                Context context = new Context();
+                context.setAlgorithm(bf);
+                context.doExploration();
 
                 bf.getFindTour().forEach(edge -> Graph.highlight(edge, true));
+                changeTypePlay(false);
                 return null;
             }
         };
