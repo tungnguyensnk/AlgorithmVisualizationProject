@@ -26,6 +26,7 @@ public class App extends Application {
         /*
          * set màu và kiểu trong suốt để lấy bo góc tuyệt đối
          * tạo khả năng movable
+         *
          */
         root.setOnMousePressed(mouseEvent -> {
             xOffset = mouseEvent.getSceneX();
